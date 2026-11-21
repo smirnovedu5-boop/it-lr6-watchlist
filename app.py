@@ -4,6 +4,7 @@ from statistics import mean
 import sqlite3
 
 import streamlit as st
+from PIL import Image, ImageOps
 
 import db
 
@@ -82,6 +83,18 @@ def author():
     st.title("Про автора")
     st.subheader("Смірнов Едуард")
     st.write("Група П-31 · Гусятинський фаховий коледж")
+    photo = st.file_uploader("Додати своє фото", type=["jpg", "jpeg", "png"],
+                            max_upload_size=5, help="До 5 МБ. Фото бачите лише ви у цьому сеансі.")
+    if photo is not None:
+        try:
+            with Image.open(photo, formats=["JPEG", "PNG"]) as original:
+                if original.width * original.height > 24_000_000:
+                    raise ValueError("image too large")
+                preview = ImageOps.exif_transpose(original).convert("RGB")
+                preview.thumbnail((480, 480))
+                st.image(preview, width=min(240, preview.width))
+        except (OSError, ValueError, Image.DecompressionBombError):
+            st.warning("Виберіть справне фото JPG або PNG розміром до 24 мегапікселів.")
     st.write("Індивідуальний проєкт до лабораторної роботи № 6 з дисципліни «Інформаційні технології».")
     st.write("Трекер допомагає вибрати фільм на вечір, продовжити серіал або пригадати власну оцінку після перегляду.")
     st.caption("Python · Streamlit · SQLite. Демонстраційний каталог спільний для відвідувачів цього екземпляра.")
