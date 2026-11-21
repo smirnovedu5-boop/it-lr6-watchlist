@@ -1,4 +1,5 @@
 from datetime import date
+from random import choice
 from statistics import mean
 import sqlite3
 
@@ -84,6 +85,23 @@ def author():
     st.write("Індивідуальний проєкт до лабораторної роботи № 6 з дисципліни «Інформаційні технології».")
     st.write("Трекер допомагає вибрати фільм на вечір, продовжити серіал або пригадати власну оцінку після перегляду.")
     st.caption("Python · Streamlit · SQLite. Демонстраційний каталог спільний для відвідувачів цього екземпляра.")
+
+    st.divider()
+    st.subheader("Вибір на вечір")
+    planned = db.titles(status=db.STATES[0])
+    if not planned:
+        st.info("Список планів порожній. Додайте фільм або серіал зі статусом «Хочу подивитися».")
+        return
+    st.write("Не знаєте, з чого почати? Оберіть випадкову назву зі списку «Хочу подивитися».")
+    previous = st.session_state.get("evening_id")
+    if st.button("Підібрати на вечір"):
+        alternatives = [item for item in planned if item["id"] != previous]
+        st.session_state.evening_id = choice(alternatives or planned)["id"]
+    selected = next((item for item in planned if item["id"] == st.session_state.get("evening_id")), None)
+    if selected:
+        with st.container(border=True):
+            st.text(selected["name"])
+            st.caption(f"{selected['kind']} · {selected['year']} · {selected['genre']}")
 
 
 page = st.navigation({
