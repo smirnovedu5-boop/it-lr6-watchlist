@@ -28,4 +28,4 @@ python -m venv .venv
 
 Код опубліковано в [репозиторії ЛР-6](https://github.com/smirnovedu5-boop/it-lr6-watchlist). Для запуску у [Streamlit Community Cloud](https://share.streamlit.io/) виберіть репозиторій `smirnovedu5-boop/it-lr6-watchlist`, гілку `main` і головний файл `app.py`. Секрети для SQLite не потрібні. Локальний диск Community Cloud тимчасовий, тому після повторного розгортання база може повернутися до демонстраційного стану.
 
-Публічну адресу цього проєкту ще не підтверджено.
+[Відкрити «Що подивитися?»](https://smirnov-lr6-watchlist.streamlit.app/) — застосунок доступний без входу до облікового запису.
