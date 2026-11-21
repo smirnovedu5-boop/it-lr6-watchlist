@@ -84,6 +84,7 @@ def author():
     st.subheader("Смірнов Едуард")
     st.write("Група П-31 · Гусятинський фаховий коледж")
     st.image(str(Path(__file__).with_name('assets') / 'author.jpg'), width=180)
+    st.write("«Мій кінозал» починається з простого запитання: що подивитися сьогодні з того, що друзі радили ще минулого тижня?")
     st.caption("Python · Streamlit · SQLite. Демонстраційний каталог спільний для відвідувачів цього екземпляра.")
 
     st.divider()
