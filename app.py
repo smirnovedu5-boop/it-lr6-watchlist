@@ -79,10 +79,14 @@ def manage():
             st.rerun()
 
 
-def author():
-    st.title("Про автора")
-    st.subheader("Смірнов Едуард")
-    st.write("Група П-31 · Гусятинський фаховий коледж")
+def author_photo():
+    saved = st.session_state.get("author_photo")
+    if saved is not None:
+        st.image(saved, width=min(240, saved.width))
+        if st.button("Прибрати фото"):
+            del st.session_state["author_photo"]
+            st.rerun()
+        return
     photo = st.file_uploader("Додати своє фото", type=["jpg", "jpeg", "png"],
                             max_upload_size=5, help="До 5 МБ. Фото бачите лише ви у цьому сеансі.")
     if photo is not None:
@@ -92,9 +96,17 @@ def author():
                     raise ValueError("image too large")
                 preview = ImageOps.exif_transpose(original).convert("RGB")
                 preview.thumbnail((480, 480))
-                st.image(preview, width=min(240, preview.width))
+                st.session_state.author_photo = preview
+            st.rerun()
         except (OSError, ValueError, Image.DecompressionBombError):
             st.warning("Виберіть справне фото JPG або PNG розміром до 24 мегапікселів.")
+
+
+def author():
+    st.title("Про автора")
+    st.subheader("Смірнов Едуард")
+    st.write("Група П-31 · Гусятинський фаховий коледж")
+    author_photo()
     st.write("Індивідуальний проєкт до лабораторної роботи № 6 з дисципліни «Інформаційні технології».")
     st.write("Трекер допомагає вибрати фільм на вечір, продовжити серіал або пригадати власну оцінку після перегляду.")
     st.caption("Python · Streamlit · SQLite. Демонстраційний каталог спільний для відвідувачів цього екземпляра.")
