@@ -4,7 +4,7 @@ from statistics import mean
 import sqlite3
 
 import streamlit as st
-from PIL import Image, ImageOps
+from pathlib import Path
 
 import db
 
@@ -79,34 +79,11 @@ def manage():
             st.rerun()
 
 
-def author_photo():
-    saved = st.session_state.get("author_photo")
-    if saved is not None:
-        st.image(saved, width=min(240, saved.width))
-        if st.button("Прибрати фото"):
-            del st.session_state["author_photo"]
-            st.rerun()
-        return
-    photo = st.file_uploader("Додати своє фото", type=["jpg", "jpeg", "png"],
-                            max_upload_size=5, help="До 5 МБ. Фото бачите лише ви у цьому сеансі.")
-    if photo is not None:
-        try:
-            with Image.open(photo, formats=["JPEG", "PNG"]) as original:
-                if original.width * original.height > 24_000_000:
-                    raise ValueError("image too large")
-                preview = ImageOps.exif_transpose(original).convert("RGB")
-                preview.thumbnail((480, 480))
-                st.session_state.author_photo = preview
-            st.rerun()
-        except (OSError, ValueError, Image.DecompressionBombError):
-            st.warning("Виберіть справне фото JPG або PNG розміром до 24 мегапікселів.")
-
-
 def author():
     st.title("Про автора")
     st.subheader("Смірнов Едуард")
     st.write("Група П-31 · Гусятинський фаховий коледж")
-    author_photo()
+    st.image(str(Path(__file__).with_name('assets') / 'author.jpg'), width=180)
     st.caption("Python · Streamlit · SQLite. Демонстраційний каталог спільний для відвідувачів цього екземпляра.")
 
     st.divider()
@@ -115,7 +92,9 @@ def author():
     if not planned:
         st.info("Список планів порожній. Додайте фільм або серіал зі статусом «Хочу подивитися».")
         return
-    st.write("Не знаєте, з чого почати? Оберіть випадкову назву зі списку «Хочу подивитися».")
+    genre = st.selectbox("Що хочеться подивитися?", ["Будь-який жанр", *sorted({item["genre"] for item in planned})])
+    if genre != "Будь-який жанр":
+        planned = [item for item in planned if item["genre"] == genre]
     previous = st.session_state.get("evening_id")
     if st.button("Підібрати на вечір"):
         alternatives = [item for item in planned if item["id"] != previous]
